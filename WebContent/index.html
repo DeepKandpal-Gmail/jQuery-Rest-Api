@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+<style type="text/css">
+
+.hidden{display:none;}
+	
+#table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 50%;
+}
+
+#table td, #table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#table tr:nth-child(even){background-color: #f2f2f2;}
+
+#table tr:hover {background-color: #ddd;}
+
+#table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){ 
+	    $("button[name='search']").click(function(){
+	    	$("#table").find("tr:gt(0)").remove();
+	    	var id = $("input[name='courseId']").val();
+	    	if(id=='' || id==' '){
+	    		alert("Please Mention Course ID in Search box");
+	    		$("#table").addClass("hidden");
+	    	}
+	    	else{
+	        $.ajax({
+	            url: 'http://localhost:8080/categories/'+id,   
+	            type: 'GET',
+	            success: function(data, textStatus, xhr) { 
+	               //alert("Course Name: "+data.name+"\nDescription: "+data.description+"\nStatus Code: "+textStatus);
+	                if(data){
+	                    			var txt = "";
+	                                txt = "<tr><td>"+data.id+"</td><td>"+data.name+"</td><td>"+data.description+"</td></tr>";
+	                                $("#table").append(txt).removeClass("hidden");
+	                        }
+	            
+            },  
+	            error: function(xhr, textStatus, errorThrown) {  
+	                console.log('Error in Database');   
+	            }  
+	        }); 
+	    	}
+	    });
+	    $("button[name='searchAll']").click(function(){
+	    	$("#table").find("tr:gt(0)").remove().addClass("hidden");
+	        $.ajax({
+	            url: 'http://localhost:8080/categories',   
+	            type: 'GET',
+	            success: function(data, textStatus, xhr) { 
+	               //alert("Course Name: "+data.name+"\nDescription: "+data.description+"\nStatus Code: "+textStatus);
+	            	if(data){
+	                    var len = data.length;
+	                    var txt = "";
+	                    if(len > 0){
+	                        for(var i=0;i<len;i++){
+	  
+	                                txt += "<tr><td>"+data[i].id+"</td><td>"+data[i].name+"</td><td>"+data[i].description+"</td></tr>";
+	                            }
+	                        }
+	                        if(txt != ""){
+	                            $("#table").append(txt).removeClass("hidden");
+	                        }
+	                    }
+	   
+	            
+            },  
+	            error: function(xhr, textStatus, errorThrown) {  
+	                console.log('Error in Database');   
+	            }  
+	        });  
+	    }); 
+    
+});
+
+</script>
+</head>
+<body>
+<div align="center">
+<h1>Aptron Training Institute</h1>
+</div>
+
+<div align="center" style="margin-top: 10%">
+<label><b>Enter Course ID:</b></label>
+<input type="text" name="courseId"/>
+<button name="search">Search</button>&nbsp; &nbsp;<button name="searchAll">Show All Courses</button></br></br></br>
+<table id="table" class="hidden" border="1">
+    <tr>
+    	<th>Id</th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+</table>
+
+</div>
+
+
+
+</body>
+</html>
